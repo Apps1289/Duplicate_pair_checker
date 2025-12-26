@@ -12,12 +12,20 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Push to hub
+
+      
+      - name: Install dependencies
+        run: pip install huggingface_hub
+
+      - name: Upload to Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          
         run: |
+          # 1. Pull the actual large files into the runner
           git lfs pull
-        
+          
+          # 2. Use Python to upload everything (bypasses 10MB Git limit)
           python -c "
           from huggingface_hub import HfApi
           import os

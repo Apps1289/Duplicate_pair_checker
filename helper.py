@@ -1,3 +1,12 @@
+import nltk
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt')
+    nltk.download('punkt_tab')
+    nltk.download('wordnet')
+    nltk.download('stopwords')
+
 import re
 from bs4 import BeautifulSoup
 import distance

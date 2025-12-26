@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+*.dist-info/
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Build & packaging
+build/
+dist/
+.eggs/
+
+# Logs & coverage
+*.log
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Streamlit
+.streamlit/
+
+# OS & Editor
+.DS_Store
+.vscode/

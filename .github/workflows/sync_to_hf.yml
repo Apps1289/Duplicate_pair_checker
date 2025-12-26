@@ -18,15 +18,14 @@ jobs:
         run: |
           git lfs pull
         
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-          git init
-          git remote add hf https://Chuchlu:$HF_TOKEN@huggingface.co/spaces/Chuchlu/Duplicate_pair_checker
-
-
-          
-          git add .
-          git commit --allow-empty -m "Fresh deploy with LFS"
-          
-          git push --force hf main:main
+          python -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi()
+          api.upload_folder(
+              folder_path='.',
+              repo_id='Chuchlu/Duplicate_pair_checker',
+              repo_type='space',
+              token=os.environ['HF_TOKEN']
+          )
+          "

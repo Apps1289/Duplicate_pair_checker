@@ -16,4 +16,12 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://Chuchlu:$HF_TOKEN@huggingface.co/spaces/Chuchlu/Duplicate_pair_checker main
+          git lfs pull
+        
+          git init
+          git remote add hf https://Chuchlu:$HF_TOKEN@huggingface.co/spaces/Chuchlu/Duplicate_pair_checker
+          
+          git add .
+          git commit -m "Fresh deploy with LFS"
+          
+          git push --force hf main:main

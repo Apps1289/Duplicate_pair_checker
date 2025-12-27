@@ -14,5 +14,7 @@ COPY . .
 # Expose the port Streamlit runs on
 EXPOSE 7860
 
+ENV STREAMLIT_SERVER_PORT=7860
+ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
 # Command to run the app (ensure your file is named app.py)
 CMD ["streamlit", "run", "app.py", "--server.port", "7860", "--server.address", "0.0.0.0"]

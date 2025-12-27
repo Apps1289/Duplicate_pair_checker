@@ -17,9 +17,9 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.metrics.pairwise import paired_cosine_distances
 from gensim.utils import simple_preprocess
-import nltk
-from nltk.corpus import stopwords
-nltk.download('stopwords')
+# import nltk
+# from nltk.corpus import stopwords
+# nltk.download('stopwords')
 
 stop_words = set(stopwords.words('english'))
 model = pickle.load(open('w2v.pkl','rb'))

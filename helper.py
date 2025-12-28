@@ -1,32 +1,25 @@
-import nltk
-try:
-    nltk.data.find('tokenizers/punkt_tab')
-except LookupError:
-    nltk.download('punkt')
-    nltk.download('punkt_tab')
-    nltk.download('wordnet')
-    nltk.download('stopwords')
-
 import re
+import pickle
+import numpy as np
+import nltk
 from bs4 import BeautifulSoup
 import distance
 from fuzzywuzzy import fuzz
-import pickle
-import numpy as np
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.metrics.pairwise import paired_cosine_distances
 from gensim.utils import simple_preprocess
-# import nltk
-# from nltk.corpus import stopwords
-# nltk.download('stopwords')
 
+# 1. Correct Import Order
+from nltk.corpus import stopwords
+
+# 2. Define stop_words AFTER the import
 stop_words = set(stopwords.words('english'))
+
+# 3. Load your model
 model = pickle.load(open('w2v.pkl','rb'))
 
-
-
-
+# ... rest of your functions (test_common_words, etc.) ...
 def test_common_words(q1,q2):
   q1 = set([word.lower() for word in q1.split()])
   q2 = set([word.lower() for word in q2.split()])

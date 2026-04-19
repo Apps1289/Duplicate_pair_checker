@@ -1,3 +1,4 @@
+import ast
 import io
 import sys
 from contextlib import redirect_stdout
@@ -15,6 +16,28 @@ EventType = Literal[
     "end",
     "error",
 ]
+
+MAX_LOCAL_REPR_CHARS = 200
+DISALLOWED_CALLS = {"eval", "exec", "open", "compile", "__import__", "input"}
+SAFE_BUILTINS = {
+    "print": print,
+    "len": len,
+    "range": range,
+    "int": int,
+    "float": float,
+    "str": str,
+    "bool": bool,
+    "list": list,
+    "dict": dict,
+    "set": set,
+    "tuple": tuple,
+    "min": min,
+    "max": max,
+    "sum": sum,
+    "abs": abs,
+    "enumerate": enumerate,
+    "Exception": Exception,
+}
 
 
 class RunRequest(BaseModel):
@@ -44,8 +67,18 @@ def _safe_locals(frame_locals: dict[str, Any]) -> dict[str, str]:
         if key.startswith("__"):
             continue
         text = repr(value)
-        safe[key] = text[:200]
+        safe[key] = text[:MAX_LOCAL_REPR_CHARS]
     return safe
+
+
+def _validate_code(code: str) -> None:
+    tree = ast.parse(code)
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            raise ValueError("Import statements are disabled in the MVP Python runner")
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            if node.func.id in DISALLOWED_CALLS:
+                raise ValueError(f"Call to '{node.func.id}' is not allowed")
 
 
 @app.get("/health")
@@ -100,20 +133,21 @@ def run_python(req: RunRequest) -> RunResponse:
         return tracer
 
     stdout_buffer = io.StringIO()
-    globals_dict: dict[str, Any] = {"__builtins__": __builtins__}
+    globals_dict: dict[str, Any] = {"__builtins__": SAFE_BUILTINS}
+    old_trace = sys.gettrace()
     try:
+        _validate_code(req.code)
         compiled = compile(req.code, "<user_code>", "exec")
-        old_trace = sys.gettrace()
         sys.settrace(tracer)
         with redirect_stdout(stdout_buffer):
             exec(compiled, globals_dict, globals_dict)
-        sys.settrace(old_trace)
         output = stdout_buffer.getvalue()
         if output:
             for line in output.splitlines():
                 events.append(ExecutionEvent(event="stdout", stdout=line))
         events.append(ExecutionEvent(event="end", message="Execution finished"))
     except Exception as exc:  # pragma: no cover - defensive runtime path
-        sys.settrace(None)
         events.append(ExecutionEvent(event="error", message=str(exc)))
+    finally:
+        sys.settrace(old_trace)
     return RunResponse(events=events)

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const vm = require('vm');
 
+const JS_RUNNER_TIMEOUT_MS = Number(process.env.JS_RUNNER_TIMEOUT_MS || 2000);
+
 function cloneVars(sandbox) {
   const vars = {};
   for (const [k, v] of Object.entries(sandbox)) {
@@ -18,13 +20,20 @@ function cloneVars(sandbox) {
   return vars;
 }
 
+function shouldSkipInstrumentation(trimmed) {
+  if (!trimmed || trimmed.startsWith('//')) return true;
+  if (trimmed === '{' || trimmed === '}' || trimmed === '};') return true;
+  if (/^(function|class)\b/.test(trimmed) && trimmed.endsWith('{')) return true;
+  return false;
+}
+
 function instrument(code) {
   const lines = code.split('\n');
   return lines
     .map((line, idx) => {
       const n = idx + 1;
       const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('//')) return line;
+      if (shouldSkipInstrumentation(trimmed)) return line;
       const indent = line.match(/^\s*/)[0];
       return `${indent}__trace.line(${n});\n${line}`;
     })
@@ -62,7 +71,7 @@ sandbox.__trace = {
 
 try {
   vm.createContext(sandbox);
-  vm.runInContext(instrument(input.code || ''), sandbox, { timeout: 2000 });
+  vm.runInContext(instrument(input.code || ''), sandbox, { timeout: JS_RUNNER_TIMEOUT_MS });
   events.push({ event: 'end', message: 'Execution finished' });
 } catch (err) {
   events.push({ event: 'error', message: String(err.message || err) });

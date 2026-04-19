@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from typing import Any, Literal
 
@@ -14,6 +15,8 @@ EventType = Literal[
     "end",
     "error",
 ]
+
+JS_RUNNER_TIMEOUT_SECONDS = max(float(os.getenv("JS_RUNNER_TIMEOUT_MS", "2000")) / 1000.0, 1.0)
 
 
 class RunRequest(BaseModel):
@@ -49,7 +52,7 @@ def run_js(req: RunRequest) -> RunResponse:
         input=json.dumps({"code": req.code}),
         text=True,
         capture_output=True,
-        timeout=5,
+        timeout=JS_RUNNER_TIMEOUT_SECONDS,
         check=False,
     )
     if proc.returncode != 0:

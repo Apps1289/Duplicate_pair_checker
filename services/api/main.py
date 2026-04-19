@@ -41,6 +41,7 @@ RUNNER_ENDPOINTS = {
     "python": os.getenv("PYTHON_RUNNER_URL", "http://runner-python:8001") + "/run",
     "javascript": os.getenv("JS_RUNNER_URL", "http://runner-js:8002") + "/run",
 }
+RUNNER_TIMEOUT_SECONDS = float(os.getenv("RUNNER_TIMEOUT_SECONDS", "10"))
 
 app = FastAPI(title="viz-compiler-api", version="0.1.0")
 app.add_middleware(
@@ -81,7 +82,7 @@ def execute(request: ExecuteRequest) -> ExecuteResponse:
         response = requests.post(
             endpoint,
             json={"code": request.code},
-            timeout=float(os.getenv("RUNNER_TIMEOUT_SECONDS", "10")),
+            timeout=RUNNER_TIMEOUT_SECONDS,
         )
         response.raise_for_status()
     except requests.RequestException as exc:

@@ -25,11 +25,12 @@ function escapeHtml(value) {
 
 function renderCodeView(activeLine) {
   const lines = editorEl.value.split('\n');
+  const linePadding = String(lines.length).length;
   codeViewEl.innerHTML = lines
     .map((line, index) => {
       const lineNo = index + 1;
       const activeClass = lineNo === activeLine ? 'code-line active' : 'code-line';
-      return `<span class="${activeClass}">${lineNo.toString().padStart(2, '0')} | ${escapeHtml(line)}</span>`;
+      return `<span class="${activeClass}">${lineNo.toString().padStart(linePadding, '0')} | ${escapeHtml(line)}</span>`;
     })
     .join('');
 }
@@ -73,15 +74,24 @@ document.getElementById('run').addEventListener('click', async () => {
   stackEl.innerHTML = '';
   currentEventEl.textContent = 'Running...';
 
-  const res = await fetch(`${window.__API_BASE__ || 'http://localhost:8000'}/execute`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ language, code }),
-  });
-  const data = await res.json();
-  events = data.events || [];
-  cursor = 0;
-  if (events.length) renderEvent(events[0]);
+  try {
+    const res = await fetch(`${window.__API_BASE__ || 'http://localhost:8000'}/execute`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language, code }),
+    });
+    if (!res.ok) {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
+    const data = await res.json();
+    events = data.events || [];
+    cursor = 0;
+    if (events.length) renderEvent(events[0]);
+    else currentEventEl.textContent = 'No events returned.';
+  } catch (error) {
+    currentEventEl.textContent = 'Execution request failed.';
+    stdoutEl.textContent += `[error] ${error.message}\n`;
+  }
 });
 
 document.getElementById('step').addEventListener('click', step);

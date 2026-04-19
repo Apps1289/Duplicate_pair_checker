@@ -147,7 +147,7 @@ def run_python(req: RunRequest) -> RunResponse:
                 events.append(ExecutionEvent(event="stdout", stdout=line))
         events.append(ExecutionEvent(event="end", message="Execution finished"))
     except Exception as exc:  # pragma: no cover - defensive runtime path
-        events.append(ExecutionEvent(event="error", message=str(exc)))
+        events.append(ExecutionEvent(event="error", message=f"{type(exc).__name__}: {exc}"))
     finally:
         sys.settrace(old_trace)
     return RunResponse(events=events)

@@ -67,8 +67,8 @@ def run_js(req: RunRequest) -> RunResponse:
     for item in payload.get("events", []):
         try:
             events.append(ExecutionEvent(**item))
-        except Exception:
-            events.append(ExecutionEvent(event="error", message="Malformed JS event"))
+        except Exception as exc:
+            events.append(ExecutionEvent(event="error", message=f"Malformed JS event: {exc}"))
 
     if not events:
         events = [ExecutionEvent(event="end", message="No events emitted")]

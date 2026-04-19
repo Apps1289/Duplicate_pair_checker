@@ -24,6 +24,7 @@ function shouldSkipInstrumentation(trimmed) {
   if (!trimmed || trimmed.startsWith('//')) return true;
   if (trimmed === '{' || trimmed === '}' || trimmed === '};') return true;
   if (/^(function|class)\b/.test(trimmed) && trimmed.endsWith('{')) return true;
+  if (/=>\s*\{$/.test(trimmed)) return true;
   return false;
 }
 

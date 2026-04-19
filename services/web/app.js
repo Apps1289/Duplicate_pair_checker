@@ -1,6 +1,7 @@
 let events = [];
 let cursor = 0;
 let timer = null;
+const defaultApiBase = `${window.location.protocol}//${window.location.hostname}:8000`;
 
 const editorEl = document.getElementById('editor');
 const stdoutEl = document.getElementById('stdout');
@@ -75,7 +76,7 @@ document.getElementById('run').addEventListener('click', async () => {
   currentEventEl.textContent = 'Running...';
 
   try {
-    const res = await fetch(`${window.__API_BASE__ || 'http://localhost:8000'}/execute`, {
+    const res = await fetch(`${window.__API_BASE__ || defaultApiBase}/execute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ language, code }),

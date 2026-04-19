@@ -1,0 +1,12 @@
+body { font-family: Arial, sans-serif; margin: 0; background: #111; color: #f5f5f5; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #333; }
+.controls { display: flex; gap: 8px; }
+main { display: grid; grid-template-columns: 1fr 1fr; height: calc(100vh - 64px); }
+.panel { padding: 12px; overflow: auto; border-right: 1px solid #333; }
+#viz-panel { border-right: none; }
+#editor { width: 100%; min-height: 260px; background: #0f0f0f; color: #f5f5f5; border: 1px solid #333; border-radius: 4px; padding: 8px; }
+#code-view { background: #0f0f0f; border: 1px solid #333; border-radius: 4px; }
+pre { background: #1c1c1c; padding: 8px; border-radius: 4px; overflow: auto; }
+li { margin-bottom: 4px; }
+.code-line { display: block; }
+.code-line.active { background: #213a5b; }

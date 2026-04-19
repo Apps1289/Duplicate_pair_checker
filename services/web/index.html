@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization Compiler MVP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Visualization Compiler MVP</h1>
+      <div class="controls">
+        <select id="language">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+        </select>
+        <button id="run">Run</button>
+        <button id="play">Play</button>
+        <button id="pause">Pause</button>
+        <button id="step">Step</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" id="editor-panel">
+        <h3>Code Editor</h3>
+        <textarea id="editor"></textarea>
+        <h3>Executing Line Highlight</h3>
+        <pre id="code-view"></pre>
+      </section>
+      <section class="panel" id="viz-panel">
+        <h3>Current Event</h3>
+        <pre id="current-event">No execution yet.</pre>
+        <h3>Call Stack</h3>
+        <ul id="call-stack"></ul>
+        <h3>Variables</h3>
+        <pre id="locals">{}</pre>
+        <h3>Stdout</h3>
+        <pre id="stdout"></pre>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

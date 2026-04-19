@@ -1,0 +1,29 @@
+services:
+  api:
+    build: ./services/api
+    environment:
+      - PYTHON_RUNNER_URL=${PYTHON_RUNNER_URL:-http://runner-python:8001}
+      - JS_RUNNER_URL=${JS_RUNNER_URL:-http://runner-js:8002}
+      - RUNNER_TIMEOUT_SECONDS=${RUNNER_TIMEOUT_SECONDS:-10}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - runner-python
+      - runner-js
+
+  runner-python:
+    build: ./services/runner-python
+    ports:
+      - "8001:8001"
+
+  runner-js:
+    build: ./services/runner-js
+    ports:
+      - "8002:8002"
+
+  web:
+    build: ./services/web
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
